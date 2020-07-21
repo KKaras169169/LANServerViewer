@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import jcifs.smb.*;
 import static androidx.lifecycle.Lifecycle.State.RESUMED;
 
-
 public class MainActivity extends AppCompatActivity {
     Button btnSearch;
     TextView fileList;
