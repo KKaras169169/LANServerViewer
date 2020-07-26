@@ -30,6 +30,8 @@ class SmbSeeker {
                     ret.add(currentPingAddress); }*/
                 if(isPortOpen(currentPingAddress.toString(), port, timeout)) {
                     ret.add(currentPingAddress);
+                } else {
+                    System.out.println("No available Samba devices.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

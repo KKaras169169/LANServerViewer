@@ -2,7 +2,6 @@
 package pg.edu.lanserverviewer;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;

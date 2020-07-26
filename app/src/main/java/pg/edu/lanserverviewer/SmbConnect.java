@@ -1,7 +1,7 @@
 //TODO: call this class AFTER search for SAMBA devices on the network and pass arguments dynamically;
 // add method onPostExecute to avoid halting IoThread
-
 package pg.edu.lanserverviewer;
+
 import android.os.AsyncTask;
 import java.net.MalformedURLException;
 import jcifs.smb.NtlmPasswordAuthentication;
