@@ -40,16 +40,14 @@ public class MainActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //TODO: make below code run on a separate thread
-                WifiManager wm = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-                WifiInfo wi = wm.getConnectionInfo();
-                int ipAddress = wi.getIpAddress();
-                String ip = String.format("%d.%d.%d.%d", (ipAddress & 0xff),(ipAddress >> 8 & 0xff),(ipAddress >> 16 & 0xff),(ipAddress >> 24 & 0xff));
+                String ip = getIpAddress();
                 ArrayList<InetAddress> ret;
-                SmbSeeker smbSeeker = new SmbSeeker();
-                ret = smbSeeker.getDevices(ip);
-                System.out.println(ret.toString());
+                if(!ip.equals("not connected")) {
+                    SmbSeeker smbSeeker = new SmbSeeker();
+                    ret = smbSeeker.getDevices(ip);
+                    System.out.println(ret.toString());
+                }
                 /*try {
                     StartTask(v);
                 } catch (ExecutionException e) {
@@ -69,5 +67,21 @@ public class MainActivity extends AppCompatActivity {
         status = abt.getStatusState();
         fileList.setText(list);
         statusTxt.setText(status);
+    }
+
+    public String getIpAddress() {
+        WifiManager wm = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        WifiInfo wi = null;
+        if (wm != null) {
+            wi = wm.getConnectionInfo();
+        } else {
+            System.out.println("WiFi Manager is Null");
+        }
+        int ipAddress = wi.getIpAddress();
+        String ip = String.format("%d.%d.%d.%d", (ipAddress & 0xff),(ipAddress >> 8 & 0xff),(ipAddress >> 16 & 0xff),(ipAddress >> 24 & 0xff));
+        if(ip.equals("0.0.0.0"))
+            return "not connected";
+        else
+            return ip;
     }
 }
