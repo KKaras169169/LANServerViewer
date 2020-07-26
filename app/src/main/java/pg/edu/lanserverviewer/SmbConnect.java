@@ -1,3 +1,6 @@
+//TODO: call this class AFTER search for SAMBA devices on the network and pass arguments dynamically;
+// add method onPostExecute to avoid halting IoThread
+
 package pg.edu.lanserverviewer;
 import android.os.AsyncTask;
 import java.net.MalformedURLException;
@@ -5,13 +8,13 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-public class AsyncBackgroundTask extends AsyncTask {
+public class SmbConnect extends AsyncTask {
 
-    private String smbPath = "smb://192.168.50.162/";
-    private String smbDir = "DYSK_SIECIOWY/";
+    private String smbPath = "smb://192.168.50.162/"; //change from hardcoded to dynamic based on search for shares result
+    private String smbDir = "DYSK_SIECIOWY/"; //change from hardcoded to dynamic based on menu element selected
     private String list = "";
     private String status = "";
-    private String username = "opi";
+    private String username = "opi"; //add user account on opi to access samba shares instead of using default account
     private String pass = "opizero123";
 
     @Override
