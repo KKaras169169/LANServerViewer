@@ -1,5 +1,7 @@
-//searching the net for SAMBA devices
+//TODO: change the status TextView when no SAMBA devices are found / show appropriate notification
 package pg.edu.lanserverviewer;
+
+import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -8,15 +10,22 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-class SmbSeeker {
-    private int LoopCurrentIP = 0;
-    private int timeout = 50; //ms
-    private int port = 445;
+class SmbSeeker extends AsyncTask<Void, Void, ArrayList<InetAddress>> {
+    private String ip = "";
+    private ArrayList<InetAddress> ret;
+    private AsyncResponse delegate;
 
-    ArrayList<InetAddress> getDevices(String selfIP) {
-        ArrayList<InetAddress> ret = new ArrayList<>();
-        LoopCurrentIP = 0;
-        String ipAddress = "";
+    SmbSeeker(String selfIp, ArrayList<InetAddress> mainRet, AsyncResponse listener) {
+        ip = selfIp;
+        ret = mainRet;
+        this.delegate = listener;
+    }
+
+    private void getDevices(String selfIP) {
+        int LoopCurrentIP = 0;
+        int timeout = 50; //ms
+        int port445 = 445;
+        int port139 = 139;
         String[] ipAddressArray = selfIP.split("\\.");
         InetAddress currentPingAddress;
 
@@ -26,19 +35,20 @@ class SmbSeeker {
                         ipAddressArray[1] + "." +
                         ipAddressArray[2] + "." + LoopCurrentIP);
 
-                /*if(currentPingAddress.isReachable(50)) {
-                    ret.add(currentPingAddress); }*/
-                if(isPortOpen(currentPingAddress.toString(), port, timeout)) {
-                    ret.add(currentPingAddress);
-                } else {
-                    System.out.println("No available Samba devices.");
+                if(currentPingAddress.isReachable(timeout)) {
+                    String tempIP = currentPingAddress.toString();
+                    tempIP = tempIP.substring(1);
+                    if(isPortOpen(tempIP, port445, timeout)) {
+                        ret.add(currentPingAddress);
+                    } else if(isPortOpen(tempIP, port139, timeout)) {
+                        ret.add(currentPingAddress);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             LoopCurrentIP++;
         }
-        return ret;
     }
 
     private static boolean isPortOpen(String ip, int port, int timeout) {
@@ -55,6 +65,15 @@ class SmbSeeker {
             return false;
         }
     }
+
+    protected void onPostExecute(ArrayList<InetAddress> result) {
+        delegate.processFinish(result);
+    }
+
+    protected ArrayList<InetAddress> doInBackground(Void... voids) {
+        getDevices(ip);
+        return ret;
+    }
 }
 
-//Done: Searching the net for devices via IP addresses and open SAMBA ports (445)
+//Done: Searching the net for devices via IP addresses with open SAMBA ports (445)
