@@ -19,11 +19,11 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="327dp"
-        android:layout_height="559dp"
+        android:layout_width="311dp"
+        android:layout_height="31dp"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="108dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn" />
@@ -38,4 +38,27 @@
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/btn"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/serverList"
+        android:layout_width="325dp"
+        android:layout_height="471dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginRight="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ProgressBar
+        android:id="@+id/searchProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max = "255"
+        android:layout_width="292dp"
+        android:layout_height="11dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="68dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusText" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

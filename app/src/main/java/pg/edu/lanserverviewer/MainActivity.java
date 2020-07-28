@@ -1,4 +1,4 @@
-//TODO: change main class to be responsible for the menu only (implement menu)
+//TODO: add option to connect to chosen device, add user preference to store found devices, make dynamic layout
 package pg.edu.lanserverviewer;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,7 +7,10 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -16,6 +19,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Button btnSearch;
     TextView fileList;
     TextView statusTxt;
+    ListView serverList;
+    ProgressBar searchProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         StrictMode.ThreadPolicy tp = StrictMode.ThreadPolicy.LAX;
         StrictMode.setThreadPolicy(tp);
+
+        final ArrayList<InetAddress> serverArray = new ArrayList<>();
+        final ArrayAdapter serverArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, serverArray);
 
         fileList = findViewById(R.id.textView);
         statusTxt = findViewById(R.id.statusText);
@@ -40,13 +48,21 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                         @Override
                         public void processFinish(ArrayList<InetAddress> result) {
                             ret[0] = result;
+                            serverArray.clear();
+                            serverArray.addAll(result);
+                            serverList.setAdapter(serverArrayAdapter);
                             //TODO: display menu with list of available devices (clickable tiles) and option to connect to them after tapping
                         }
-                    });
+                    }, MainActivity.this.searchProgress);
                     smbSeeker.execute();
                 }
             }
         });
+
+        serverList = findViewById(R.id.serverList);
+        searchProgress = findViewById(R.id.searchProgress);
+        searchProgress.setVisibility(View.GONE);
+
     }
 
     public String getIpAddress() {
@@ -66,12 +82,5 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(ArrayList<InetAddress> ret) {
-        if(!ret.isEmpty()) {
-            for(int i = 0; i < ret.size(); i++) {
-                //TODO: display menu with list of available devices and option to connect to them after tapping
-            }
-        }
-        System.out.println(ret.toString());
-    }
+    public void processFinish(ArrayList<InetAddress> ret) {}
 }
