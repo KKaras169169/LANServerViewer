@@ -2,7 +2,8 @@
 package pg.edu.lanserverviewer;
 
 import android.os.AsyncTask;
-
+import android.view.View;
+import android.widget.ProgressBar;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -10,15 +11,20 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-class SmbSeeker extends AsyncTask<Void, Void, ArrayList<InetAddress>> {
+class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
     private String ip = "";
     private ArrayList<InetAddress> ret;
     private AsyncResponse delegate;
+    private ProgressBar progressBar;
 
-    SmbSeeker(String selfIp, ArrayList<InetAddress> mainRet, AsyncResponse listener) {
+    SmbSeeker(String selfIp, ArrayList<InetAddress> mainRet, AsyncResponse listener, ProgressBar mainProgressBar) {
         ip = selfIp;
         ret = mainRet;
         this.delegate = listener;
+        progressBar = mainProgressBar;
+        if(progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     private void getDevices(String selfIP) {
@@ -40,10 +46,11 @@ class SmbSeeker extends AsyncTask<Void, Void, ArrayList<InetAddress>> {
                     tempIP = tempIP.substring(1);
                     if(isPortOpen(tempIP, port445, timeout)) {
                         ret.add(currentPingAddress);
-                    } else if(isPortOpen(tempIP, port139, timeout)) {
+                    } /*else if(isPortOpen(tempIP, port139, timeout)) {
                         ret.add(currentPingAddress);
-                    }
+                    }*/
                 }
+                publishProgress(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,21 +65,30 @@ class SmbSeeker extends AsyncTask<Void, Void, ArrayList<InetAddress>> {
             socket.close();
             return true;
         } catch(ConnectException ce){
-            ce.printStackTrace();
+            System.out.println("Connection refused: " + ip + " PORT: " + port);
             return false;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("Unable to connect to: " + ip + " PORT: " + port);
             return false;
         }
     }
 
     protected void onPostExecute(ArrayList<InetAddress> result) {
+        progressBar.setVisibility(View.GONE);
         delegate.processFinish(result);
     }
 
     protected ArrayList<InetAddress> doInBackground(Void... voids) {
         getDevices(ip);
         return ret;
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... progress) {
+        super.onProgressUpdate(progress);
+        if(this.progressBar != null) {
+            progressBar.setProgress(progress[0]);
+        }
     }
 }
 
