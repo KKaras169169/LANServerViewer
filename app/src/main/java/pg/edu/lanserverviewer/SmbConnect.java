@@ -14,8 +14,8 @@ public class SmbConnect extends AsyncTask {
     private String smbDir = "DYSK_SIECIOWY/"; //change from hardcoded to dynamic based on menu element selected
     private String list = "";
     private String status = "";
-    private String username = "opi"; //add user account on opi to access samba shares instead of using default account
-    private String pass = "opizero123";
+    private String username = "sharemanager";
+    private String pass = "shares";
 
     @Override
     protected Object doInBackground(Object[] objects) {

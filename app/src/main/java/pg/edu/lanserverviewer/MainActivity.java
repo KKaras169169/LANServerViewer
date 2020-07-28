@@ -11,18 +11,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Button btnSearch;
     TextView fileList;
     TextView statusTxt;
-    String smbPath = "smb://192.168.50.162/";
-    String smbDir = "DYSK_SIECIOWY/";
-    String list = "";
-    String status = "";
-    String username = "opi";
-    String pass = "opizero123";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,31 +33,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //TODO: make below code run on a separate thread
                 String ip = getIpAddress();
-                ArrayList<InetAddress> ret;
+                final ArrayList<InetAddress>[] ret = new ArrayList[]{new ArrayList<>()};
                 if(!ip.equals("not connected")) {
-                    SmbSeeker smbSeeker = new SmbSeeker();
-                    ret = smbSeeker.getDevices(ip);
-                    System.out.println(ret.toString());
+
+                    SmbSeeker smbSeeker = new SmbSeeker(ip, ret[0], new AsyncResponse() {
+                        @Override
+                        public void processFinish(ArrayList<InetAddress> result) {
+                            ret[0] = result;
+                            //TODO: display menu with list of available devices (clickable tiles) and option to connect to them after tapping
+                        }
+                    });
+                    smbSeeker.execute();
                 }
-                /*try {
-                    StartTask(v);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         });
-    }
-
-    public void StartTask(View v) throws ExecutionException, InterruptedException {
-        SmbConnect abt = new SmbConnect();
-        abt.execute().get();
-
-        list = abt.getList();
-        status = abt.getStatusState();
-        fileList.setText(list);
-        statusTxt.setText(status);
     }
 
     public String getIpAddress() {
@@ -81,5 +63,15 @@ public class MainActivity extends AppCompatActivity {
             return "not connected";
         else
             return ip;
+    }
+
+    @Override
+    public void processFinish(ArrayList<InetAddress> ret) {
+        if(!ret.isEmpty()) {
+            for(int i = 0; i < ret.size(); i++) {
+                //TODO: display menu with list of available devices and option to connect to them after tapping
+            }
+        }
+        System.out.println(ret.toString());
     }
 }
