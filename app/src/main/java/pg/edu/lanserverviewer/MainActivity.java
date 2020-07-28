@@ -7,7 +7,9 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Button btnSearch;
     TextView fileList;
     TextView statusTxt;
+    ListView serverList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         StrictMode.ThreadPolicy tp = StrictMode.ThreadPolicy.LAX;
         StrictMode.setThreadPolicy(tp);
+
+        final ArrayList<InetAddress> serverArray = new ArrayList<>();
+        final ArrayAdapter serverArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, serverArray);
 
         fileList = findViewById(R.id.textView);
         statusTxt = findViewById(R.id.statusText);
@@ -40,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                         @Override
                         public void processFinish(ArrayList<InetAddress> result) {
                             ret[0] = result;
+                            serverArray.addAll(result);
+                            serverList.setAdapter(serverArrayAdapter);
                             //TODO: display menu with list of available devices (clickable tiles) and option to connect to them after tapping
                         }
                     });
@@ -47,6 +55,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 }
             }
         });
+
+        serverList = findViewById(R.id.serverList);
+
+
     }
 
     public String getIpAddress() {

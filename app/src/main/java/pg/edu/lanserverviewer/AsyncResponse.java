@@ -1,3 +1,4 @@
+//Interface for monitoring SmbSeeker
 package pg.edu.lanserverviewer;
 
 import java.net.InetAddress;
