@@ -17,9 +17,9 @@ class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
     private AsyncResponse delegate;
     private ProgressBar progressBar;
 
-    SmbSeeker(String selfIp, ArrayList<InetAddress> mainRet, AsyncResponse listener, ProgressBar mainProgressBar) {
+    SmbSeeker(String selfIp, AsyncResponse listener, ProgressBar mainProgressBar) {
         ip = selfIp;
-        ret = mainRet;
+        ret = new ArrayList<>();
         this.delegate = listener;
         progressBar = mainProgressBar;
         if(progressBar != null) {
@@ -31,11 +31,10 @@ class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
         int LoopCurrentIP = 0;
         int timeout = 50; //ms
         int port445 = 445;
-        int port139 = 139;
         String[] ipAddressArray = selfIP.split("\\.");
         InetAddress currentPingAddress;
 
-        for(int i = 0; i <= 255; i++) {
+        for(int i = 2; i <= 255; i++) {
             try {
                 currentPingAddress = InetAddress.getByName(ipAddressArray[0] + "." +
                         ipAddressArray[1] + "." +
@@ -46,9 +45,7 @@ class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
                     tempIP = tempIP.substring(1);
                     if(isPortOpen(tempIP, port445, timeout)) {
                         ret.add(currentPingAddress);
-                    } /*else if(isPortOpen(tempIP, port139, timeout)) {
-                        ret.add(currentPingAddress);
-                    }*/
+                    }
                 }
                 publishProgress(i);
             } catch (IOException e) {

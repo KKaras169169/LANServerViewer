@@ -1,7 +1,10 @@
-//TODO: add option to connect to chosen device, add user preference to store found devices, make dynamic layout
+//TODO: add option to connect to chosen device, make dynamic layout, COMMENT EVERYTHING WHILE YOU STILL REMEMBER
 package pg.edu.lanserverviewer;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -13,7 +16,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Button btnSearch;
@@ -33,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         final ArrayList<InetAddress> serverArray = new ArrayList<>();
         final ArrayAdapter serverArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, serverArray);
 
+        //final ArrayList<InetAddress>[] ret = new ArrayList[]{new ArrayList<>()};
+
         fileList = findViewById(R.id.textView);
         statusTxt = findViewById(R.id.statusText);
         btnSearch = findViewById(R.id.btn);
@@ -41,16 +48,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             public void onClick(View v) {
                 //TODO: make below code run on a separate thread
                 String ip = getIpAddress();
-                final ArrayList<InetAddress>[] ret = new ArrayList[]{new ArrayList<>()};
+                serverArray.clear();
+                serverList.setAdapter(serverArrayAdapter);
                 if(!ip.equals("not connected")) {
-
-                    SmbSeeker smbSeeker = new SmbSeeker(ip, ret[0], new AsyncResponse() {
+                    SmbSeeker smbSeeker = new SmbSeeker(ip, new AsyncResponse() {
                         @Override
                         public void processFinish(ArrayList<InetAddress> result) {
-                            ret[0] = result;
                             serverArray.clear();
                             serverArray.addAll(result);
                             serverList.setAdapter(serverArrayAdapter);
+                            saveAddressArray(serverArray);
                             //TODO: display menu with list of available devices (clickable tiles) and option to connect to them after tapping
                         }
                     }, MainActivity.this.searchProgress);
@@ -60,6 +67,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         });
 
         serverList = findViewById(R.id.serverList);
+        try {
+            retrieveAddressArray();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         searchProgress = findViewById(R.id.searchProgress);
         searchProgress.setVisibility(View.GONE);
 
@@ -83,4 +95,36 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void processFinish(ArrayList<InetAddress> ret) {}
+
+    public void saveAddressArray(ArrayList<InetAddress> addresses) {
+        if(addresses != null) {
+            String PREFERENCES = "LANServerViewer PREFERENCES";
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            for(int i = 0; i < addresses.size(); i++) {
+                editor.putString(String.valueOf(i), addresses.get(i).toString());
+            }
+            editor.commit();
+        }
+    }
+
+    public ArrayList<InetAddress> retrieveAddressArray() throws UnknownHostException {
+        String PREFERENCES = "LANServerViewer PREFERENCES";
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        Map<String,?> mappedAddresses = sharedPreferences.getAll();
+        ArrayList<InetAddress> addresses = new ArrayList<>();
+        for(Map.Entry<String,?> entry : mappedAddresses.entrySet()) {
+            addresses.add(InetAddress.getByName(entry.getValue().toString().substring(1)));
+        }
+
+        ArrayList<InetAddress> serverArray = new ArrayList<>();
+        ArrayAdapter serverArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, serverArray);
+
+        serverArray.clear();
+        serverArray.addAll(addresses);
+        serverList.setAdapter(serverArrayAdapter);
+        return addresses;
+    }
 }
