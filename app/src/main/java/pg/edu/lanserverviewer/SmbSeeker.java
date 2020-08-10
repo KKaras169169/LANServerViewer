@@ -90,3 +90,4 @@ class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
 }
 
 //Done: Searching the net for devices via IP addresses with open SAMBA ports (445)
+//changed searching for available devices to start from .2 instead of .1
