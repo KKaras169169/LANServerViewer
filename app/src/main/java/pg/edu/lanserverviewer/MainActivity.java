@@ -10,11 +10,14 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -70,6 +73,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+
+        serverList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                CharSequence toastText = "This is: " + serverList.getItemAtPosition(position).toString();
+                Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
         searchProgress = findViewById(R.id.searchProgress);
         searchProgress.setVisibility(View.GONE);
 
