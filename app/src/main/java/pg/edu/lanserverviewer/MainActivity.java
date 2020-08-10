@@ -22,7 +22,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Button btnSearch;
-    TextView fileList;
     TextView statusTxt;
     ListView serverList;
     ProgressBar searchProgress;
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         //final ArrayList<InetAddress>[] ret = new ArrayList[]{new ArrayList<>()};
 
-        fileList = findViewById(R.id.textView);
         statusTxt = findViewById(R.id.statusText);
         btnSearch = findViewById(R.id.btn);
         btnSearch.setOnClickListener(new View.OnClickListener() {

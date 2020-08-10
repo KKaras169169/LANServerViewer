@@ -28,7 +28,7 @@ class SmbSeeker extends AsyncTask<Void, Integer, ArrayList<InetAddress>> {
     }
 
     private void getDevices(String selfIP) {
-        int LoopCurrentIP = 0;
+        int LoopCurrentIP = 2;
         int timeout = 50; //ms
         int port445 = 445;
         String[] ipAddressArray = selfIP.split("\\.");
