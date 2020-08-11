@@ -8,7 +8,7 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-public class SmbConnect extends AsyncTask {
+public class SmbConnector extends AsyncTask {
 
     private String smbPath = "smb://192.168.50.162/"; //change from hardcoded to dynamic based on search for shares result
     private String smbDir = "DYSK_SIECIOWY/"; //change from hardcoded to dynamic based on menu element selected

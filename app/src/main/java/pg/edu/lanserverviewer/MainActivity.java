@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -39,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         final ArrayList<InetAddress> serverArray = new ArrayList<>();
         final ArrayAdapter serverArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, serverArray);
-
-        //final ArrayList<InetAddress>[] ret = new ArrayList[]{new ArrayList<>()};
 
         statusTxt = findViewById(R.id.statusText);
         btnSearch = findViewById(R.id.btn);
@@ -77,15 +76,32 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         serverList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                CharSequence toastText = "This is: " + serverList.getItemAtPosition(position).toString();
-                Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
-                toast.show();
+                CharSequence toastText = "test";
+                String selfIpString = serverList.getItemAtPosition(position).toString();
+                try {
+                    InetAddress selfIp = (InetAddress.getByName(selfIpString.substring(1)));
+                    if(selfIp.isReachable(50)) {
+                        //add new Activity here.
+                        toastText = serverList.getItemAtPosition(position).toString() + " is reachable.";
+                        Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                } catch (UnknownHostException e) {
+                    toastText = serverList.getItemAtPosition(position).toString() + " is unreachable.";
+                    Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
+                    e.printStackTrace();
+                    toast.show();
+                } catch (IOException e) {
+                    toastText = "unable to ping the address.";
+                    Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
+                    e.printStackTrace();
+                    toast.show();
+                }
             }
         });
 
         searchProgress = findViewById(R.id.searchProgress);
         searchProgress.setVisibility(View.GONE);
-
     }
 
     public String getIpAddress() {
