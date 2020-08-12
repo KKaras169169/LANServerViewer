@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: make below code run on a separate thread
                 String ip = getIpAddress();
                 serverArray.clear();
                 serverList.setAdapter(serverArrayAdapter);
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                             serverArray.addAll(result);
                             serverList.setAdapter(serverArrayAdapter);
                             saveAddressArray(serverArray);
-                            //TODO: display menu with list of available devices (clickable tiles) and option to connect to them after tapping
                         }
                     }, MainActivity.this.searchProgress);
                     smbSeeker.execute();
@@ -81,10 +79,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 try {
                     InetAddress selfIp = (InetAddress.getByName(selfIpString.substring(1)));
                     if(selfIp.isReachable(50)) {
-                        //add new Activity here.
                         toastText = serverList.getItemAtPosition(position).toString() + " is reachable.";
                         Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
                         toast.show();
+
+                        SmbConnector smbConnector = new SmbConnector(serverList.getItemAtPosition(position).toString().substring(1));
+                        smbConnector.execute();
+                        //TODO: add new Activity here, use returned list.
                     }
                 } catch (UnknownHostException e) {
                     toastText = serverList.getItemAtPosition(position).toString() + " is unreachable.";

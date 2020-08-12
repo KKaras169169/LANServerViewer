@@ -3,19 +3,29 @@
 package pg.edu.lanserverviewer;
 
 import android.os.AsyncTask;
+
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 public class SmbConnector extends AsyncTask {
-
-    private String smbPath = "smb://192.168.50.162/"; //change from hardcoded to dynamic based on search for shares result
+    //TODO: fix logging to non root account
+    private String smbPath = "smb://"; //change from hardcoded to dynamic based on search for shares result
     private String smbDir = "DYSK_SIECIOWY/"; //change from hardcoded to dynamic based on menu element selected
     private String list = "";
     private String status = "";
-    private String username = "sharemanager";
-    private String pass = "shares";
+    private String username = "opi";
+    private String pass = "opizero123";
+    private InetAddress selfIp;
+
+    public SmbConnector(String ip) throws UnknownHostException {
+        this.selfIp = InetAddress.getByName(ip);
+        this.smbPath = this.smbPath + ip + "/";
+    }
 
     @Override
     protected Object doInBackground(Object[] objects) {
@@ -28,9 +38,7 @@ public class SmbConnector extends AsyncTask {
                         listFiles = smb.listFiles();
                     } catch (SmbException e) {
                         e.printStackTrace();
-                        status = "Unable to list files";
                     }
-                    status = "Connected";
 
                     for (int element = 0; element < listFiles.length; element++) {
                         list = list + listFiles[element].toString();
